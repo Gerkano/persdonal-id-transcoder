@@ -1,5 +1,7 @@
 from datetime import datetime
 from tkinter import *
+import logging
+logging.basicConfig(filename='Checks_log.log', level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 
 class PersonalID:
 
@@ -27,7 +29,7 @@ class PersonalID:
             if first_num<=6 and first_num>=1:
                 try:
                     date_validity_check = datetime(int(year1), int(month1), int(day1))
-                    print(date_validity_check)
+                    logging.info(date_validity_check)
                     return True
                 except:
                     return False  
@@ -46,20 +48,24 @@ class PersonalID:
             last_num = int(self.personal_code[10])        
             for number in range(code_len-1):
                 num_sum1 = num_sum1 + (int(self.personal_code[number]) * count)
+                logging.info(f"Counter is: {count}")
                 count = count+1
-                if count == 9:
+                if count == 10:
                     count = 1
                     continue
     
             for number in range(code_len-1):
                 num_sum2 = num_sum2 + (int(self.personal_code[number]) * count2)
+                logging.info(f"Counter two is: {count2}")
                 count2 = count2+1
-                if count2 == 9:
+                if count2 == 10:
                     count2 = 1
                     continue
 
             controlm1 = num_sum1 % 11
+            logging.info(f"Control number is: {controlm1}")
             controlm2 = num_sum2 % 11
+            logging.info(f"Second control number is: {controlm2}")
         
             if controlm1 == 10:
                 if controlm2 == 10:
@@ -73,11 +79,12 @@ class PersonalID:
             
 
     def conclusion(self) -> bool:
-        if self.control_number() == True and self.date_validity() == True:
-           print("Personal code is valid")
+        first_check = self.control_number()
+        second_check = self.date_validity()
+        logging.info(f"Check results: {first_check}, {second_check}")
+        if first_check == True and second_check == True:
            return True
         else:
-            print("Personal code is either incorrect or invalid")
             return False
 
 
@@ -93,26 +100,28 @@ def submit():
     ip1 = PersonalID(ui.get())
     memory = ip1.conclusion()
     memory2 = ui.get()
-    if ip1.conclusion() == True:
-        result["text"] = f"{ui.get()} Personal code is valid"
-        status["text"] = f"{ui.get()} Personal code is valid"
+    logging.info(f"Entry: {memory2}")
+    if memory == True:
+        result["text"] = "Personal code is valid"
+        status["text"] = "Veryfied"
     else:
-        result["text"] = f"{ui.get()} Personal code is not valid or incorrect, please try again"
-        status["text"] = f"{ui.get()} Personal code is not valid or incorrect, please try again"
+        result["text"] = "Personal code is not valid or incorrect, please try again"
+        status["text"] = "Not veryfied"
+    logging.info(f"Memory entry: {memory}")
     return memory
 
 def delete():
     result["text"] = ""
     field.delete(0, 5000)
-    status["text"] = "nothing"
+    status["text"] = "Field entry empty"
 
-def restore(memory, memory2):
+def restore(memory):
     if memory == True:
-            result["text"] = f"{memory2} Personal code is valid"
-            status["text"] = f"{memory2} Personal code is valid"
+        result["text"] = "Personal code is valid"
+        status["text"] = "Veryfied"
     else:
-        result["text"] = f"{memory2} Personal code is not valid or incorrect, please try again"
-        status["text"] = f"{memory2} Personal code is not valid or incorrect, please try again"
+        result["text"] = "Personal code is not valid or incorrect, please try again"
+        status["text"] = "Not veryfied"
 
 menu.add_cascade(labe="Menu", menu=submenu)
 submenu.add_command(label="Delete", command=delete)
@@ -120,12 +129,11 @@ submenu.add_command(label="Restore", command=restore)
 submenu.add_separator()
 submenu.add_command(label="Exit", command=window.destroy)
 
-field = Entry(window)
+field = Entry(window, show= '*')
 name = Label(window, text="Enter your personal code")
-button = Button(window, text="PLEASE DO NOT PRESS THE BUTTON", command=submit)
-button.bind(window, "<Return>", lambda event: submit())
+button = Button(window, text="Confirm check", command=submit)
 result = Label(window, text="")
-status = Label(window, text="nothing", bd=1, relief=SUNKEN, anchor=W)
+status = Label(window, text="Field entry empty", bd=1, relief=SUNKEN, anchor=W)
 
 
 name.pack()
