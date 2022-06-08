@@ -1,6 +1,5 @@
 from datetime import datetime
-
-personal_code1=str(input("iveskite koda: "))
+from tkinter import *
 
 class PersonalID:
 
@@ -82,6 +81,56 @@ class PersonalID:
             return False
 
 
-emp1 = PersonalID(personal_code1)
+window = Tk()
+ui = StringVar()
+menu = Menu(window)
+window.config(menu=menu)
+submenu = Menu(menu, tearoff = 0)
+window.geometry("650x300")
 
-print(emp1.conclusion())
+def submit():
+    ui.set(field.get())
+    ip1 = PersonalID(ui.get())
+    memory = ip1.conclusion()
+    memory2 = ui.get()
+    if ip1.conclusion() == True:
+        result["text"] = f"{ui.get()} Personal code is valid"
+        status["text"] = f"{ui.get()} Personal code is valid"
+    else:
+        result["text"] = f"{ui.get()} Personal code is not valid or incorrect, please try again"
+        status["text"] = f"{ui.get()} Personal code is not valid or incorrect, please try again"
+    return memory
+
+def delete():
+    result["text"] = ""
+    field.delete(0, 5000)
+    status["text"] = "nothing"
+
+def restore(memory, memory2):
+    if memory == True:
+            result["text"] = f"{memory2} Personal code is valid"
+            status["text"] = f"{memory2} Personal code is valid"
+    else:
+        result["text"] = f"{memory2} Personal code is not valid or incorrect, please try again"
+        status["text"] = f"{memory2} Personal code is not valid or incorrect, please try again"
+
+menu.add_cascade(labe="Menu", menu=submenu)
+submenu.add_command(label="Delete", command=delete)
+submenu.add_command(label="Restore", command=restore)
+submenu.add_separator()
+submenu.add_command(label="Exit", command=window.destroy)
+
+field = Entry(window)
+name = Label(window, text="Enter your personal code")
+button = Button(window, text="PLEASE DO NOT PRESS THE BUTTON", command=submit)
+button.bind(window, "<Return>", lambda event: submit())
+result = Label(window, text="")
+status = Label(window, text="nothing", bd=1, relief=SUNKEN, anchor=W)
+
+
+name.pack()
+field.pack()
+button.pack()
+result.pack()
+status.pack(side=BOTTOM, fill=X)
+window.mainloop()
